@@ -1,0 +1,21 @@
+---
+# Variables for the bird ospf configuration
+
+vip: '7.8.9.10/32'
+
+ospf_proto_block: EXTERNAL
+
+ospf_area: 1
+
+iface: '{{ ansible_eth1.device }}'
+
+networks:
+    - { value: '20.1.1.0/28'}
+    - { value: '20.1.1.16/28'}
+    - { value: '20.1.1.32/28'}
+    - { value: '20.1.1.48/28'}
+    - { value: '20.1.1.64/28'}
+    - { value: '20.1.1.80/28'}
+    - { value: '20.1.1.96/28'}
+    - { value: '20.1.1.112/28'}
+    - { value: '20.1.1.160/28'}

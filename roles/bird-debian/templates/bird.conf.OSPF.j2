@@ -1,0 +1,46 @@
+/*
+ *	This is bird ospf configuration
+ */
+# Configure logging
+log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };
+log stderr all;
+#log "tmp" all;
+
+# Turn on global debugging of all protocols
+debug protocols all;
+
+# This pseudo-protocol watches all interface up/down events.
+protocol device {
+	scan time 10;		# Scan interfaces every 10 seconds
+}
+
+ filter net_filter {
+       if {% for net in networks %} (net = "{{ net.value }}" ) || 
+       {% endfor %}
+           (net = "{{ vip }}") then accept;
+	else reject;
+}
+
+protocol ospf {{ ospf_proto_block }} {
+   ecmp yes;
+   import filter net_filter;
+   export none;
+   area 0.0.0.{{ ospf_area }}  {
+      networks {
+         {{ vip }};
+      };
+      interface "{{ iface }}";
+      interface "lo" {
+        stub yes;
+      };
+   };
+}
+
+protocol kernel {
+   persist;
+   import none;
+   export filter {
+     if proto = "{{ ospf_proto_block }}" then accept;
+     reject;
+   };
+}

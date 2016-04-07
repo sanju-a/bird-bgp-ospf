@@ -1,0 +1,3 @@
+#### Ubuntu bird ppa launchpad sources list
+deb http://ppa.launchpad.net/cz.nic-labs/bird/ubuntu trusty main
+deb-src http://ppa.launchpad.net/cz.nic-labs/bird/ubuntu trusty main

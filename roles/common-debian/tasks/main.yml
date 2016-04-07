@@ -1,0 +1,25 @@
+---
+# This role contains common plays that will run on all nodes.
+
+- name: Create the repository for bird
+  copy: src=bird.ppa.list dest=/etc/apt/sources.list.d/bird.ppa.list
+
+- name: Update the signing key for bird ppa
+  apt_key: keyserver=keyserver.ubuntu.com id=52463488670E69A092007C24F2331238F9C59A45 state=present
+
+- name: apt-get update
+  apt: update_cache=yes
+
+- name: Install ntp 
+  apt: name=ntp state=installed
+  tags: ntp
+
+- name: Configure ntp file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  notify: 
+    - restart ntp
+  tags: ntp
+
+- name: Start the ntp service
+  service: name=ntp state=started enabled=yes
+  tags: ntp

@@ -1,0 +1,9 @@
+---
+# Variables here are applicable to all host groups
+
+# BGP network protocol configuration (ospf|bgp)
+bird_network_proto: ospf
+
+# NTP server to sync time
+ntpserver: 10.84.5.100
+

@@ -1,0 +1,21 @@
+---
+# This role installs HAProxy and configures it.
+
+- name: Download and install bird base and bird bgp
+  apt: name={{ item }} state=present
+  with_items:
+  - bird
+  - bird-bgp
+
+- name: Configure the bird cnf file with ospf
+  template: src=bird.conf.OSPF.j2 dest=/etc/bird/bird.conf
+  when:  bird_network_proto == 'ospf'
+  notify: restart bird
+
+- name: Configure the bird cnf file with bgp
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  when:  bird_network_proto == 'bgp'
+  notify: restart bird
+
+- name: Start the bird service
+  service: name=bird state=started enabled=yes

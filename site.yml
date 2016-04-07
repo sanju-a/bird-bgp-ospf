@@ -1,0 +1,16 @@
+---
+# This playbook deploys the bird and configures it either to use OSPF or BGP.  
+
+# Apply common configuration to all hosts
+- hosts: all
+  remote_user: root
+  roles:
+  - { role: common-debian, when: ansible_os_family == 'Debian' }
+
+# Configure and deploy the bird servers. Note that we include three roles here, 
+# the 'bird-base' role which simply sets up bird-base, and 'bord-bgp' which installs
+# bgp. bird-proto configures OSPF or BGP based on the variable 
+- hosts: birds
+  remote_user: root
+  roles:
+   - { role: bird-debian, when: ansible_os_family == 'Debian' }
