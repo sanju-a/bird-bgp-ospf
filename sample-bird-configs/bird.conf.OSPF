@@ -1,0 +1,56 @@
+/*
+ *	This is an example configuration file.
+ */
+
+# Yes, even shell-like comments work...
+
+# Configure logging
+log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };
+log stderr all;
+#log "tmp" all;
+
+# Turn on global debugging of all protocols
+debug protocols all;
+
+# This pseudo-protocol watches all interface up/down events.
+protocol device {
+	scan time 10;		# Scan interfaces every 10 seconds
+}
+
+filter net_filter {
+	if (net = 20.1.1.0/28) ||
+           (net = 20.1.1.16/28) ||
+           (net = 20.1.1.32/28) ||
+           (net = 20.1.1.48/28) ||
+           (net = 20.1.1.64/28) ||
+           (net = 20.1.1.80/28) ||
+           (net = 20.1.1.96/28) ||
+           (net = 20.1.1.112/28) || 
+           (net = 20.1.1.160/28) ||
+           (net = 203.0.113.150/32) then accept;
+	else reject;
+}
+
+protocol ospf EXTERNAL {
+   ecmp yes;
+   import filter net_filter;
+   export none;
+   area 0.0.0.1 {
+      networks {
+         203.0.113.150/32;
+      };
+      interface "eth1";
+      interface "lo" {
+        stub yes;
+      };
+   };
+}
+
+protocol kernel {
+   persist;
+   import none;
+   export filter {
+     if proto = "EXTERNAL" then accept;
+     reject;
+   };
+}

@@ -1,0 +1,100 @@
+/*
+ *	This is an example configuration file.
+ */
+
+# Yes, even shell-like comments work...
+
+# Configure logging
+log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };
+log stderr all;
+#log "tmp" all;
+
+# Override router ID
+router id 20.1.1.66;
+
+# Turn on global debugging of all protocols
+debug protocols all;
+
+# This pseudo-protocol performs synchronization between BIRD's routing
+# tables and the kernel. If your kernel supports multiple routing tables
+# (as Linux 2.2.x does), you can run multiple instances of the kernel
+# protocol and synchronize different kernel tables with different BIRD tables.
+protocol kernel {
+#	learn;			# Learn all alien routes from the kernel
+	persist;		# Don't remove routes on bird shutdown
+	scan time 20;		# Scan kernel routing table every 20 seconds
+	#import none;		# Default is import all
+	export all;		# Default is export none
+#	kernel table 5;		# Kernel table to synchronize with (default: main)
+}
+
+# This pseudo-protocol watches all interface up/down events.
+protocol device {
+	scan time 10;		# Scan interfaces every 10 seconds
+}
+
+# Static routes (again, there can be multiple instances, so that you
+# can disable/enable various groups of static routes on the fly).
+#protocol static {
+#	disabled;		# Disable by default
+#	table testable;		# Connect to a non-default table
+#	preference 1000;	# Default preference of routes
+#	debug { states, routes, filters, interfaces, events, packets };
+#	debug all;
+#	route 0.0.0.0/0 via 198.51.100.13;
+#	route 198.51.100.0/25 unreachable;
+#	route 10.0.0.0/8 unreachable;
+#	route 10.1.1.0:255.255.255.0 via 198.51.100.3;
+#	route 10.1.2.0:255.255.255.0 via 198.51.100.3;
+#	route 10.1.3.0:255.255.255.0 via 198.51.100.4;
+#	route 10.2.0.0/24 via "arc0";
+#        route 20.1.1.0/24 via 20.1.1.65;
+#        route 203.0.113.150/32 via "lo:1";
+#}
+
+protocol static static_bgp {
+        import all;
+        route 203.0.113.150/32 reject;
+}
+
+protocol bgp {
+        #enabled;
+	description "My BGP uplink";
+	local as 65000;
+	neighbor 20.1.1.65 as 64512;
+        multihop;
+        import all;
+	hold time 90;
+	startup hold time 90;
+	connect retry time 90;
+	keepalive time 90;	# defaults to hold time / 3
+	start delay time 5;	# How long do we wait before initial connect
+#	error wait time 60, 300;# Minimum and maximum time we wait after an error (when consecutive
+#				# errors occur, we increase the delay exponentially ...
+#	error forget time 300;	# ... until this timeout expires)
+#	disable after error;	# Disable the protocol automatically when an error occurs
+	next hop self;		# Disable next hop processing and always advertise our local address as nexthop
+#	enable route refresh off;
+#	path metric 1;		# Prefer routes with shorter paths (like Cisco does)
+#	default bgp_med 0;	# MED value we use for comparison when none is defined
+#	default bgp_local_pref 0;	# The same for local preference
+	source address 20.1.1.66;	# What local address we use for the TCP connection
+#	password "secret";	# Password used for MD5 authentication
+#	rr client;		# I am a route reflector and the neighor is my client
+#	rr cluster id 1.0.0.1;	# Use this value for cluster id instead of my router id 
+	#export where source=RTS_STATIC;
+        export where proto = "static_bgp";
+	#export filter {
+	#	if source = RTS_STATIC then {
+			#bgp_community = -empty-; bgp_community = add(bgp_community,(65000,5678));
+			#bgp_origin = 0;
+			#bgp_community = -empty-; bgp_community.add((65000,5678));
+			#if (65000,64501) ~ bgp_community then
+			#	bgp_community.add((0, 1));
+			#if bgp_path ~ [= 65000 =] then
+			#	bgp_path.prepend(65000);
+	#		accept;
+	#	}
+	#	reject;
+	#};
+}
