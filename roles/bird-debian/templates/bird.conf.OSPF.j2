@@ -15,13 +15,13 @@ protocol device {
 }
 
  filter net_filter {
-       if {% for net in networks %} (net = "{{ net.value }}" ) || 
+       if {% for net in networks %} (net = {{ net.value }} ) || 
        {% endfor %}
-           (net = "{{ vip }}") then accept;
+           (net = {{ vip }}) then accept;
 	else reject;
 }
 
-protocol ospf {{ ospf_proto_block }} {
+protocol ospf EXTERNAL {
    ecmp yes;
    import filter net_filter;
    export none;
@@ -40,7 +40,7 @@ protocol kernel {
    persist;
    import none;
    export filter {
-     if proto = "{{ ospf_proto_block }}" then accept;
+     if proto = "EXTERNAL" then accept;
      reject;
    };
 }

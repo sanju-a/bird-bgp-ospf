@@ -1,10 +1,8 @@
 ---
-# Variables for the bird ospf configuration
 
 vip: '7.8.9.10/32'
 
-ospf_proto_block: EXTERNAL
-
+# Variables for the bird ospf configuration
 ospf_area: 1
 
 iface: '{{ ansible_eth1.device }}'
@@ -19,3 +17,6 @@ networks:
     - { value: '20.1.1.96/28'}
     - { value: '20.1.1.112/28'}
     - { value: '20.1.1.160/28'}
+
+# Variables for bird BGP configuration
+router_id: '{{ ansible_eth1.ipv4.address }}'

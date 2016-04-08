@@ -1,0 +1,54 @@
+/*
+ *	This is an BGP configuration file.
+ */
+
+# Configure logging
+log syslog { debug, trace, info, remote, warning, error, auth, fatal, bug };
+log stderr all;
+#log "tmp" all;
+
+# Override router ID
+router id {{ router_id }};
+
+# Turn on global debugging of all protocols
+debug protocols all;
+
+# This pseudo-protocol performs synchronization between BIRD's routing
+# tables and the kernel. If your kernel supports multiple routing tables
+# (as Linux 2.2.x does), you can run multiple instances of the kernel
+# protocol and synchronize different kernel tables with different BIRD tables.
+protocol kernel {
+#	learn;			# Learn all alien routes from the kernel
+	persist;		# Don't remove routes on bird shutdown
+	scan time 20;		# Scan kernel routing table every 20 seconds
+	#import none;		# Default is import all
+	export all;		# Default is export none
+#	kernel table 5;		# Kernel table to synchronize with (default: main)
+}
+
+# This pseudo-protocol watches all interface up/down events.
+protocol device {
+	scan time 10;		# Scan interfaces every 10 seconds
+}
+
+protocol static static_bgp {
+        import all;
+        route {{ vip }} reject;
+}
+
+protocol bgp {
+	description "BGP uplink";
+	local as {{ local_as }};
+	neighbor {{ neighbor_ip }} as {{ peer_as }};
+        multihop;
+        import all;
+	hold time 90;
+	startup hold time 90;
+	connect retry time 90;
+	keepalive time 90;	
+	start delay time 5;	
+	next hop self;		# Disable next hop processing and always advertise our local address as nexthop
+	source address {{ router_id }};	# What local address we use for the TCP connection
+#	password "secret";	# Password used for MD5 authentication
+        export where proto = "static_bgp";
+}

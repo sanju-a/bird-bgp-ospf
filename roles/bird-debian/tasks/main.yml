@@ -13,7 +13,7 @@
   notify: restart bird
 
 - name: Configure the bird cnf file with bgp
-  template: src=bird.conf.bgp.j2  dest=/etc/bird/bird.conf
+  template: src=bird.conf.BGP.j2  dest=/etc/bird/bird.conf
   when:  bird_network_proto == 'bgp'
   notify: restart bird
 
