@@ -20,7 +20,7 @@ Steps for running playbook:
         10.10.10.10
         20.20.20.20
 
-2-> Update the vip and networks in group_vars/birds. The networks are the networks that you want the static route to be configured by bird on the servers and update the routing tables. 
+2-> Update the bird_network_proto, vip and networks in group_vars/birds. The networks are the networks that you want the static route to be configured by bird on the servers and update the routing tables. 
 
 3-> Run the setup.sh script
 
