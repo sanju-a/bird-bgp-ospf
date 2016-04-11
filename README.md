@@ -43,3 +43,15 @@ Same config files for OSPF and BGP can be found here https://github.com/sanabby/
 <p align="center">
   <img src="images/bird-topo.jpg" width="350"/>
 </p>
+
+In the above diagram, there is GW router for the cluster/site/DC. The IP CLOS fabric with spine and leaf (TOR) has uplink to the GW. Nodes/servers on which the bird is deployed is connected to the TOR that has l3 interfaces enabled and can talk BGP or OSPF. 
+
+In the lab deployed used here it depicts all Juniper devices, MX for GW router, QFX-3500 for TOR and QFX-3600 for spine.
+
+For the detailed configuration from one the TOR please look at the Network-config section below.
+
+# Network Config
+
+Juniper QFX 3500 TOR config for OSPF and BGP peering with the bird can be found @ https://github.com/sanabby/bird-bgp-ospf/tree/master/network-configs/qfx-3500-tor.config
+
+For OSPF config please look at the OSPF area 0.0.0.1 and for BGP look at the section __bird__ in file https://github.com/sanabby/bird-bgp-ospf/tree/master/network-configs/qfx-3500-tor.config
