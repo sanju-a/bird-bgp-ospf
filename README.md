@@ -37,3 +37,9 @@ The result of the above steps will be servers configured with bird OSPF.
 # Sample configs 
 
 Same config files for OSPF and BGP can be found here https://github.com/sanabby/bird-bgp-ospf/tree/master/sample-bird-configs
+
+# Topology
+
+<p align="center">
+  <img src="images/bird-topo.jpg" width="350"/>
+</p>
