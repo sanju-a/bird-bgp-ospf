@@ -50,6 +50,10 @@ In the lab deployed used here it depicts all Juniper devices, MX for GW router, 
 
 For the detailed configuration from one the TOR please look at the Network-config section below.
 
+In this topology bird-bgp stack is running on 4 nodes that provides anycast VIP. In production deployments, it can be deployed on the ideal number of servers / controllers that consitue a cluster. 
+
+* In general, recommendation for contrail HA consists of 3 controllers.
+
 # Network Config
 
 Juniper QFX 3500 TOR config for OSPF and BGP peering with the bird can be found @ https://github.com/sanabby/bird-bgp-ospf/tree/master/network-configs/qfx-3500-tor.config
