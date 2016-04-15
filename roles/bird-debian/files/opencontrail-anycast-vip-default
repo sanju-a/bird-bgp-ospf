@@ -1,0 +1,10 @@
+# Defaults file for OPENCONTRAIL-ANYCAST-VIP
+#
+# This is sourced by both, the initscript and the systemd unit file, so do not
+# treat it as a shell script fragment.
+
+# Change the config file location if needed
+#CONFIG="/etc/opencontrail-anyast-vip/opencontrail-anyast-vip.cfg"
+
+# Add extra flags here, see opencontrail-anyast-vip(1) for a few options
+#EXTRAOPTS="-de -m 16"

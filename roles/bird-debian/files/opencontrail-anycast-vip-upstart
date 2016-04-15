@@ -1,0 +1,29 @@
+description "opencontrail-anycast-vip - VIP manager"
+
+start on runlevel [2345]
+stop on runlevel [06]
+
+env PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+env PIDFILE=/var/run/opencontrail-anycast-vip.pid
+env CONFIG=/etc/opencontrail-anycast-vip/opencontrail-anycast-vip.conf
+env OPENCONTRAIL_ANYCAST_VIP=/usr/local/bin/opencontrail-anycast-vip
+env RUNDIR=/run/opencontrail-anycast-vip
+
+expect fork
+respawn
+respawn limit 3 5
+
+pre-start script
+    test -f "$CONFIG" || exit 0
+    [ -d "$RUNDIR" ] || mkdir "$RUNDIR"
+    chown root:root "$RUNDIR"
+    chmod 2775 "$RUNDIR"
+end script
+
+script
+   exec $OPENCONTRAIL_ANYCAST_VIP --conf_file $CONFIG
+end script
+
+post-stop script
+   rm -f $PIDFILE
+end script

@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2015 Juniper Networks, Inc.
+#
+# author: Sanju Abraham
+
 import os
 import logging
 import subprocess
@@ -34,8 +39,8 @@ class Utils:
      def isBackendDown(backend):
          socatstr='echo "show stat -1 2 -1" | socat unix-connect:/var/run/haproxy.sock stdio | grep %s | grep -o DOWN' % backend
          f = os.popen('%s' % socatstr)
-         bkend=f.read()
-         if bkend:
+         bkend=str.strip(f.read())
+         if not bkend or bkend == "DOWN":
             return True
          else:
             return False

@@ -1,0 +1,10 @@
+---
+# This task is for updating HAProxy socket file
+
+- name: insert/update HAP sock file after chroot line
+  blockinfile:
+    dest: /etc/haproxy/haproxy.cfg
+    insertafter: "chroot"
+    content: |
+      stats socket /var/run/haproxy.sock mode 660 level admin
+    state: present

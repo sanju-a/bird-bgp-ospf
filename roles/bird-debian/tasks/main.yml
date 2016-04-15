@@ -1,5 +1,8 @@
 ---
-# This role installs HAProxy and configures it.
+# This role installs bird, opencontrail-anycast-vip manager and configures it.
+
+- name: Build opencontrail-anycast-vip module
+  include: opencontrail-anycast-vip.yml
 
 - name: Download and install bird base and bird bgp
   apt: name={{ item }} state=present
@@ -16,6 +19,8 @@
   template: src=bird.conf.BGP.j2  dest=/etc/bird/bird.conf
   when:  bird_network_proto == 'bgp'
   notify: restart bird
+  tags: bird
 
 - name: Start the bird service
   service: name=bird state=started enabled=yes
+  tags: bird

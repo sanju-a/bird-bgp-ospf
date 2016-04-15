@@ -6,4 +6,3 @@ bird_network_proto: bgp
 
 # NTP server to sync time
 ntpserver: 10.84.5.100
-

@@ -1,11 +1,13 @@
 #
 # Copyright (c) 2015 Juniper Networks, Inc.
 #
+# author: Sanju Abraham
 
 import logging
 import os
 import re
 import subprocess
+import time
 from shell import Shell
 from vip_intf_manager import VipIntfManager
 from utils import Utils
@@ -39,6 +41,7 @@ class LBHealth(object):
         self._lb_backend = value
 
     def status(self):
+        time.sleep(1)
         vipmgr=VipIntfManager()
         if Utils.isRunning(_HAP):
            if Utils.isBackendDown(self._lb_backend):
@@ -48,10 +51,12 @@ class LBHealth(object):
                  vipmgr.clear_interface(self._vip)
            else:
               if not Utils.isBackendDown(self._lb_backend):
-                 logging.debug("Assigning VIP")
-                 # Assign VIP
-                 vipmgr.create_interface(self._vip)
+                 if not Utils.isVIPPresent(self._vip):
+                    logging.debug("Assigning VIP")
+                    # Assign VIP
+                    vipmgr.create_interface(self._vip)
         else:
              # Remove VIP
              vipmgr.clear_interface(self._vip)
+        time.sleep(1)
         return True

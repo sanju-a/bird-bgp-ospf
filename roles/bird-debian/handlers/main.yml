@@ -3,3 +3,6 @@
 
 - name: restart bird
   service: name=bird state=restarted
+
+- name: restart opencontrail-anycast-vip
+  service: name=opencontrail-anycast-vip state=restarted

@@ -12,7 +12,7 @@ def requirements(filename):
 
 setuptools.setup(
     name='opencontrail-anycast-vip',
-    version='0.3.5',
+    version='1.0',
     packages=setuptools.find_packages(),
 
     # metadata
@@ -30,7 +30,7 @@ setuptools.setup(
 
     entry_points = {
         'console_scripts': [
-            'opencontrail-anycast-vip = opencontrail_anycast_vip:main',
+            'opencontrail-anycast-vip = opencontrail_anycast_vip.manage_vip:main',
         ],
     },
 )

@@ -1,0 +1,71 @@
+---
+# This task is for building opencontrail-anycast-vip 
+
+- include_vars: anycast-vip-build.yml
+
+- local_action: command date '+%Y%m%d%H%M%S'
+  register: release_timestamp
+  delegate_to: 127.0.0.1
+
+- name: Create temp directory for release tarball
+  file: path=../tmp state=directory
+  delegate_to: 127.0.0.1
+
+- name: Build release tarball
+  local_action: shell COPYFILE_DISABLE=true tar zcf ../tmp/{{app_dir}}.tgz --exclude='.DS_Store' --exclude='.git' -C {{local_dir}} .
+
+- name: Ensure release directory exists
+  file: path={{remote_base_dir}} owner={{app_owner}} group={{app_group}} state=directory
+
+- name: Copy the release file to dest
+  copy: src=../tmp/{{app_dir}}.tgz dest={{remote_base_dir}}
+
+- name: pip install opencontrail-anycast-vip
+  pip: name='file://{{remote_base_dir}}/{{app_dir}}.tgz' state=latest
+
+- name: Clear remote release archive
+  file: path={{remote_base_dir}}/{{app_dir}}.tgz state=absent
+
+- name: Cleanup release
+  file: path=../tmp state=absent
+  delegate_to: 127.0.0.1
+
+- name: Copy startup script
+  copy: src=opencontrail-anycast-vip dest={{remote_bin_dir}}/{{app}}
+
+- name: Update permission for app
+  file: path={{remote_bin_dir}}/{{app}} owner={{app_owner}} group={{app_group}} mode=755
+
+- name: Copy default file for app
+  copy: src=opencontrail-anycast-vip-default dest=/etc/default/{{app}}
+
+#- name: Copy upstart file for app
+#  copy: src=opencontrail-anycast-vip-upstart dest=/etc/init/{{app}}.conf
+
+#- name: Update permission for app upstart
+#  file: path=/etc/init/{{app}}.conf owner={{app_owner}} group={{app_group}} mode=755
+
+- name: Copy initd file for app
+  copy: src=opencontrail-anycast-vip-initd dest=/etc/init.d/{{app}}
+
+- name: Update permission for app in init.d
+  file: path=/etc/init.d/{{app}} owner={{app_owner}} group={{app_group}} mode=755
+
+- name: Ensure app conf directory exists
+  file: path=/etc/{{app}} owner={{app_owner}} group={{app_group}} state=directory
+
+- name: Ensure app runtime directory exists
+  file: path=/var/run/{{app}} owner={{app_owner}} group={{app_group}} state=directory
+
+- name: update haproxy for the socket file
+  include: haproxy-sock.yml
+
+- name: Configure the app conf file
+  template: src=anycast-vip.conf.j2 dest=/etc/{{app}}/{{app}}.conf
+  notify:
+    - restart opencontrail-anycast-vip
+  tags: opencontrail-anycast-vip
+
+- name: Start the opencontrail-anycast-vip service
+  service: name=opencontrail-anycast-vip state=started enabled=yes
+  tags: opencontrail-anycast-vip

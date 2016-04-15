@@ -21,6 +21,10 @@
   apt: name=socat state=installed
   tags: socat
 
+- name: Install python-pip
+  apt: name=python-pip state=installed
+  tags: python-pip
+
 - name: Configure ntp file
   template: src=ntp.conf.j2 dest=/etc/ntp.conf
   notify: 

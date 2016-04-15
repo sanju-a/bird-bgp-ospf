@@ -1,0 +1,18 @@
+---
+# Variables for opencontrail-anycast-vip
+
+#local_dir and app_dir
+local_dir: ~/bird-bgp-ospf/opencontrail-anycast-vip
+app_dir: opencontrail-anycast-vip
+app: opencontrail-anycast-vip
+
+# owner sna group
+app_owner: root
+app_group: root
+
+# remote base dir
+remote_base_dir: /tmp
+
+# remote bin dir
+remote_bin_dir: /usr/local/bin
+

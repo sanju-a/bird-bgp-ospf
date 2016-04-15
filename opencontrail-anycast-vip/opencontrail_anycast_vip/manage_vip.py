@@ -1,7 +1,10 @@
 #
 # Copyright (c) 2015 Juniper Networks, Inc.
 #
+# author: Sanju Abraham
+
 import argparse
+import ConfigParser
 import distutils.spawn
 import json
 import logging
@@ -11,9 +14,13 @@ import sys
 import time
 import threading
 import functools
+import signal
 
 from lb_health import LBHealth
 from shell import Shell
+
+PIDFILE="/var/run/opencontrail-anycast-vip/opencontrail-anycast-vip.pid"
+timer = 0
 
 class PeriodicTimer(object):
     def __init__(self, interval, callback):
@@ -23,18 +30,29 @@ class PeriodicTimer(object):
         def wrapper(*args, **kwargs):
             result = callback(*args, **kwargs)
             if result:
-                self.thread = threading.Timer(self.interval,
-                                              self.callback)
-                self.thread.start()
+                time.sleep(self.interval)
+                self.thread = threading.Thread(target=self.callback)
+                try:
+                   self.thread.start()
+                except (KeyboardInterrupt, SystemExit):
+                   self.thread.cancel()
 
         self.callback = wrapper
 
     def start(self):
-        self.thread = threading.Timer(self.interval, self.callback)
-        self.thread.start()
+        time.sleep(self.interval)
+        self.thread = threading.Thread(target=self.callback)
+        try:
+           self.thread.start()
+        except (KeyboardInterrupt, SystemExit):
+           self.thread.cancel()
 
     def cancel(self):
-        self.thread.cancel()
+        try:
+           self.thread.cancel()
+        except Exception as ex:
+           logging.error("cancelled the execution")
+        sys.exit(0)
 
     def join(self):
         self.thread.join()
@@ -47,9 +65,14 @@ def initialize(vip,lb_backend):
             logging.error('%s not in PATH' % prog)
             sys.exit(1)
    
+    pid=os.getpid()
+    pidfile=open(PIDFILE,'w')
+    pidfile.seek(0)
+    pidfile.write(str(pid))
     lbh=LBHealth()
     lbh.vip=vip
     lbh.lb_backend=lb_backend
+    global timer
     timer = PeriodicTimer(10, lbh.status)
     timer.start()
     timer.join()
@@ -91,14 +114,23 @@ def parse_args(args_str):
     args = parser.parse_args(remaining_argv)
     return args
 
+def signal_handler(signal, frame):
+        timer.cancel()
+        sys.exit(0)
+
 def main(args_str=None):
-    logging.basicConfig(filename='/var/log/vip_manage.log',
+    if os.path.isfile(PIDFILE):
+       os.remove(PIDFILE)
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
+                        filename='/var/log/vip_manage.log',
                         level=logging.DEBUG)
     logging.debug(' '.join(sys.argv))
     if not args_str:
         args_str = ' '.join(sys.argv[1:])
     args = parse_args(args_str)
     initialize(args.vip, args.lb_backend)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
     main()
