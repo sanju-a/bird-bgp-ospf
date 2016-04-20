@@ -57,9 +57,6 @@
 - name: Ensure app runtime directory exists
   file: path=/var/run/{{app}} owner={{app_owner}} group={{app_group}} state=directory
 
-- name: update haproxy for the socket file
-  include: haproxy-sock.yml
-
 - name: Configure the app conf file
   template: src=anycast-vip.conf.j2 dest=/etc/{{app}}/{{app}}.conf
   notify:

@@ -1,10 +1,14 @@
 ---
 # This task is for updating HAProxy socket file
 
-- name: insert/update HAP sock file after chroot line
+- name: update haproxy config by inserting the sock file for stats
   blockinfile:
     dest: /etc/haproxy/haproxy.cfg
     insertafter: "chroot"
     content: |
       stats socket /var/run/haproxy.sock mode 660 level admin
     state: present
+
+- name: Restart haproxy service
+  service: name=haproxy state=restarted enabled=yes
+  tags: haproxy
