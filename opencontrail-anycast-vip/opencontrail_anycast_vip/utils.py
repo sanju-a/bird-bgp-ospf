@@ -40,7 +40,7 @@ class Utils:
          socatstr='echo "show stat -1 2 -1" | socat unix-connect:/var/run/haproxy.sock stdio | grep %s | grep -o DOWN' % backend
          f = os.popen('%s' % socatstr)
          bkend=str.strip(f.read())
-         if not bkend or bkend == "DOWN":
+         if bkend == "DOWN":
             return True
          else:
             return False

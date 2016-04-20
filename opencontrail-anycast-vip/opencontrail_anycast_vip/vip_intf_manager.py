@@ -21,7 +21,8 @@ class VipIntfManager(object):
 
     def clear_interface(self, vip):
         try:
+           vip=vip.split("/",1)[0]
            Shell.run('ifconfig lo:1 %s netmask 255.255.255.255 down' % (vip))
-           logging.debug("Removed VIP from loopback interface due to failures")
+           logging.debug("Removed VIP from loopback interface due to all backend failures")
         except Exception as ex:
                logging.error(ex)

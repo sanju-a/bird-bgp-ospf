@@ -21,6 +21,7 @@ from shell import Shell
 
 PIDFILE="/var/run/opencontrail-anycast-vip/opencontrail-anycast-vip.pid"
 timer = 0
+lbh = 0
 
 class PeriodicTimer(object):
     def __init__(self, interval, callback):
@@ -116,6 +117,7 @@ def parse_args(args_str):
 
 def signal_handler(signal, frame):
         timer.cancel()
+        lbh.status()
         sys.exit(0)
 
 def main(args_str=None):

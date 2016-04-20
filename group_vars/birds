@@ -22,6 +22,6 @@ networks:
 router_id: '{{ ansible_eth1.ipv4.address }}'
 
 # LB backed to check
-lb_backend: contrail-api
+lb_backend: contrail-api-backend
 
 opencontrail_anycast_vip_tar: "/tmp/.ansible/opencontrail_anycast_vip.tar"
