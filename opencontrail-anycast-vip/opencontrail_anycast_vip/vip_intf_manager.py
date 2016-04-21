@@ -14,6 +14,7 @@ class VipIntfManager(object):
 
     def create_interface(self, vip):
         try:
+            vip=vip.split("/",1)[0]
             Shell.run('ifconfig lo:1 %s netmask 255.255.255.255 up' % (vip))
             logging.debug("Assigned VIP to the loopback interface")
         except Exception as ex:

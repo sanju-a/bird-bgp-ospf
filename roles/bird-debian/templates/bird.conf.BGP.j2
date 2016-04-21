@@ -31,9 +31,8 @@ protocol device {
 	scan time 10;		# Scan interfaces every 10 seconds
 }
 
-protocol static static_bgp {
-        import all;
-        route {{ vip }} reject;
+protocol direct {
+    interface {{ vip }};
 }
 
 protocol bgp {
@@ -42,6 +41,7 @@ protocol bgp {
 	neighbor {{ neighbor_ip }} as {{ peer_as }};
         multihop;
         import all;
+        export all;
 	hold time 90;
 	startup hold time 90;
 	connect retry time 90;
@@ -50,5 +50,4 @@ protocol bgp {
 	next hop self;		# Disable next hop processing and always advertise our local address as nexthop
 	source address {{ router_id }};	# What local address we use for the TCP connection
 #	password "secret";	# Password used for MD5 authentication
-        export where proto = "static_bgp";
 }
