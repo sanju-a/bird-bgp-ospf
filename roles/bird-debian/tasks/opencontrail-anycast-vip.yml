@@ -64,5 +64,5 @@
   tags: opencontrail-anycast-vip
 
 - name: Start the opencontrail-anycast-vip service
-  service: name=opencontrail-anycast-vip state=started enabled=yes
+  service: name=opencontrail-anycast-vip state=restarted enabled=yes
   tags: opencontrail-anycast-vip
