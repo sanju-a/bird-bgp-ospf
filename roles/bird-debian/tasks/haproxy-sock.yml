@@ -8,7 +8,9 @@
     content: |
       stats socket /var/run/haproxy.sock mode 660 level admin
     state: present
+  notify: restart haproxy
+  tags: haproxy
 
 - name: Restart haproxy service
-  service: name=haproxy state=restarted enabled=yes
+  service: name=haproxy state=started enabled=yes
   tags: haproxy
